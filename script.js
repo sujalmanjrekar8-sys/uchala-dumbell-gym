@@ -291,4 +291,57 @@ document.addEventListener("DOMContentLoaded", function () {
             if (countEl) countEl.textContent = parseInt(countEl.textContent) + 1;
         }
     });
+    
+    function setupLoginForm(formId, role, redirectUrl) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const usernameInput = form.querySelector("#username");
+            const passwordInput = form.querySelector("#password");
+            const submitBtn = form.querySelector("button[type='submit']");
+
+            if (!usernameInput || !passwordInput) return;
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            if (submitBtn) {
+                submitBtn.textContent = "Verifying...";
+                submitBtn.disabled = true;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password, role })
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    localStorage.setItem("currentUser", JSON.stringify(result.user));
+                    window.location.href = redirectUrl;
+                } else {
+                    alert(result.message || "Invalid username or password!");
+                    if (submitBtn) {
+                        submitBtn.textContent = "Sign In";
+                        submitBtn.disabled = false;
+                    }
+                }
+            } catch (err) {
+                alert("Server error. Please try again!");
+                if (submitBtn) {
+                    submitBtn.textContent = "Sign In";
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+    }
+
+    setupLoginForm("ownerLoginForm", "owner", "owner-dashboard.html");
+    setupLoginForm("trainer-login-form", "trainer", "trainer-dashboard.html");
+    setupLoginForm("memberLoginForm", "member", "member-dashboard.html");
 });

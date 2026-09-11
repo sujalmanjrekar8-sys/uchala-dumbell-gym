@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -21,6 +22,7 @@ mongoose
     .catch((err) => console.log("MongoDB Connection Error: ", err.message));
 
 // API Routes
+app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/members", require("./routes/memberRoutes"));
 app.use("/api/trainers", require("./routes/trainerRoutes"));
 app.use("/api/attendance", require("./routes/attendanceRoutes"));
