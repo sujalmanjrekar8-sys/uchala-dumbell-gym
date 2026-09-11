@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:" || !window.location.hostname)
     ? "http://localhost:5000/api"
     : "/api";
 
@@ -348,7 +348,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
             } catch (err) {
-                alert("Server error. Please try again!");
+                console.error("Login fetch error:", err);
+                alert(`Cannot connect to server (${err.message}). Make sure 'node server.js' is running in your terminal!`);
                 if (submitBtn) {
                     submitBtn.textContent = "Sign In";
                     submitBtn.disabled = false;
