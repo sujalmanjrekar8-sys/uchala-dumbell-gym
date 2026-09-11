@@ -7,6 +7,7 @@ const trainerSchema = new mongoose.Schema({
     specialization: { type: String, required: true },
     salary: { type: Number, required: true },
     shift: { type: String, required: true },
+    password: { type: String, default: "trainer123" },
     traineesCount: { type: Number, default: 0 }
 }, { timestamps: true });
 

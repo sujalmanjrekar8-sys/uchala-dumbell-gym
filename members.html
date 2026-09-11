@@ -44,24 +44,21 @@
 
             <form id="addMemberForm">
                 <div class="form-row">
-                    
                     <div class="form-field">
                         <label>Full Name</label>
-                        <input type="text" placeholder="e.g. Rahul Sharma" required>
+                        <input type="text" id="memberName" placeholder="e.g. Rahul Sharma" required>
                     </div>
 
-                    
                     <div class="form-field">
                         <label>Contact Number</label>
-                        <input type="tel" placeholder="e.g. 9876543210" required>
+                        <input type="tel" id="memberPhone" placeholder="e.g. 9876543210" required>
                     </div>
                 </div>
 
                 <div class="form-row">
-                    >
                     <div class="form-field">
                         <label>Membership Plan</label>
-                        <select required>
+                        <select id="memberPlan" required>
                             <option value="">Select Plan...</option>
                             <option value="starter">Starter Plan (1 Month - ₹1,200)</option>
                             <option value="pro">Pro Plan (3 Months - ₹3,000)</option>
@@ -69,10 +66,16 @@
                         </select>
                     </div>
 
-                    
                     <div class="form-field">
                         <label>Joining Date</label>
-                        <input type="date" required>
+                        <input type="date" id="memberJoinDate" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Set Member Login Password</label>
+                        <input type="password" id="memberPassword" placeholder="e.g. rahul123" required>
                     </div>
                 </div>
 

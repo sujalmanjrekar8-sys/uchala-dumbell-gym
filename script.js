@@ -59,27 +59,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     loadMembersFromDB();
 
-    if (addMemberForm) {
+        if (addMemberForm) {
         addMemberForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-            const inputs = addMemberForm.querySelectorAll("input, select");
-            const name = inputs[0].value.trim();
-            const phone = inputs[1].value.trim();
-            const planSelect = inputs[2];
-            const plan = planSelect.options[planSelect.selectedIndex].text.split(" (")[0];
-            const joinDate = inputs[3].value;
+            const nameEl = document.getElementById("memberName");
+            const phoneEl = document.getElementById("memberPhone");
+            const planEl = document.getElementById("memberPlan");
+            const dateEl = document.getElementById("memberJoinDate");
+            const passEl = document.getElementById("memberPassword");
+
+            const name = nameEl ? nameEl.value.trim() : "";
+            const phone = phoneEl ? phoneEl.value.trim() : "";
+            const plan = planEl && planEl.selectedIndex > 0 ? planEl.options[planEl.selectedIndex].text.split(" (")[0] : "Starter Plan";
+            const joinDate = dateEl ? dateEl.value : "";
+            const password = passEl ? passEl.value : "123456";
 
             try {
                 const res = await fetch(`${API_BASE}/members`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, phone, plan, joinDate })
+                    body: JSON.stringify({ name, phone, plan, joinDate, password })
                 });
                 const result = await res.json();
                 if (result.success) {
-                    alert(`Athlete "${name}" successfully saved to MongoDB!`);
+                    alert(`Athlete "${name}" registered successfully!\n\nMember ID: ${result.data.memberId}\nPassword: ${result.data.password}\n\nLogin now at Member Login using this ID and Password!`);
                     addMemberForm.reset();
                     loadMembersFromDB();
+                } else {
+                    alert(result.message || "Failed to register member");
                 }
             } catch (err) {
                 alert("Server error connecting to MongoDB");
@@ -122,27 +129,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     loadTrainersFromDB();
 
-    if (trainerForm) {
+        if (trainerForm) {
         trainerForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-            const inputs = trainerForm.querySelectorAll("input, select");
-            const name = inputs[0].value.trim();
-            const phone = inputs[1].value.trim();
-            const specialization = inputs[2].value.trim();
-            const salary = inputs[3].value.trim();
-            const shift = inputs[4].options[inputs[4].selectedIndex].text.split(" (")[0];
+            const nameEl = document.getElementById("trainerName");
+            const phoneEl = document.getElementById("trainerPhone");
+            const specEl = document.getElementById("trainerSpec");
+            const salEl = document.getElementById("trainerSalary");
+            const shiftEl = document.getElementById("trainerShift");
+            const passEl = document.getElementById("trainerPassword");
+
+            const name = nameEl ? nameEl.value.trim() : "";
+            const phone = phoneEl ? phoneEl.value.trim() : "";
+            const specialization = specEl ? specEl.value.trim() : "";
+            const salary = salEl ? salEl.value.trim() : "";
+            const shift = shiftEl && shiftEl.selectedIndex > 0 ? shiftEl.options[shiftEl.selectedIndex].text.split(" (")[0] : "Morning Shift";
+            const password = passEl ? passEl.value : "trainer123";
 
             try {
                 const res = await fetch(`${API_BASE}/trainers`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, phone, specialization, salary, shift })
+                    body: JSON.stringify({ name, phone, specialization, salary, shift, password })
                 });
                 const result = await res.json();
                 if (result.success) {
-                    alert(`Coach "${name}" successfully registered in MongoDB!`);
+                    alert(`Coach "${name}" registered successfully!\n\nTrainer ID: ${result.data.trainerId}\nPassword: ${result.data.password}\n\nCoach can now log in at Trainer Login!`);
                     trainerForm.reset();
                     loadTrainersFromDB();
+                } else {
+                    alert(result.message || "Failed to register trainer");
                 }
             } catch (err) {
                 alert("Server error connecting to MongoDB");

@@ -1,36 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
+const Owner = require("../models/Owner");
+const Trainer = require("../models/Trainer");
+const Member = require("../models/member");
 
-async function seedDefaultUsers() {
+async function seedOwner() {
     try {
-        const count = await User.countDocuments();
+        const count = await Owner.countDocuments();
         if (count === 0) {
-            await User.create([
-                { username: "admin", password: "admin123", role: "owner", name: "Gym Owner" },
-                { username: "trainer", password: "trainer123", role: "trainer", name: "Coach Rajesh" },
-                { username: "member", password: "member123", role: "member", name: "Rahul Sharma" }
-            ]);
-            console.log("Default users created in MongoDB Atlas successfully!");
+            await Owner.create({
+                username: "admin",
+                password: "admin123",
+                name: "Gym Owner"
+            });
+            console.log("Default owner account seeded to MongoDB Atlas!");
         }
-    } catch (err) {
-        console.log("Seed error:", err.message);
-    }
+    } catch (err) {}
 }
-
-router.get("/seed", async (req, res) => {
-    try {
-        await User.deleteMany({});
-        const users = await User.create([
-            { username: "admin", password: "admin123", role: "owner", name: "Gym Owner" },
-            { username: "trainer", password: "trainer123", role: "trainer", name: "Coach Rajesh" },
-            { username: "member", password: "member123", role: "member", name: "Rahul Sharma" }
-        ]);
-        res.json({ success: true, message: "Users seeded to MongoDB Atlas!", users });
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
-});
+seedOwner();
 
 router.post("/login", async (req, res) => {
     try {
@@ -40,26 +27,88 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ success: false, message: "Please enter both username and password" });
         }
 
-        const user = await User.findOne({ username: username.trim(), role });
+        const cleanUser = username.trim();
 
-        if (!user || user.password !== password) {
-            return res.status(401).json({ success: false, message: "Invalid username or password" });
+        if (role === "owner") {
+            const owner = await Owner.findOne({ username: cleanUser });
+
+            if (!owner) {
+                return res.status(401).json({ success: false, message: "Owner username not found!" });
+            }
+
+            if (owner.password !== password) {
+                return res.status(401).json({ success: false, message: "Incorrect Owner password!" });
+            }
+
+            return res.json({
+                success: true,
+                message: "Owner login successful",
+                user: { username: owner.username, name: owner.name, role: "owner" }
+            });
         }
 
-        res.json({
-            success: true,
-            message: "Login successful",
-            user: {
-                username: user.username,
-                role: user.role,
-                name: user.name
+        if (role === "trainer") {
+            const trainer = await Trainer.findOne({
+                $or: [
+                    { trainerId: cleanUser },
+                    { phone: cleanUser },
+                    { name: new RegExp(`^${cleanUser}$`, "i") }
+                ]
+            });
+
+            if (!trainer) {
+                return res.status(401).json({ success: false, message: "Trainer ID, Name, or Phone not found!" });
             }
-        });
+
+            const trainerPass = trainer.password || "trainer123";
+            if (trainerPass !== password) {
+                return res.status(401).json({ success: false, message: "Incorrect Trainer password!" });
+            }
+
+            return res.json({
+                success: true,
+                message: "Trainer login successful",
+                user: {
+                    username: trainer.trainerId,
+                    name: trainer.name,
+                    role: "trainer"
+                }
+            });
+        }
+
+        if (role === "member") {
+            const member = await Member.findOne({
+                $or: [
+                    { memberId: cleanUser },
+                    { phone: cleanUser },
+                    { name: new RegExp(`^${cleanUser}$`, "i") }
+                ]
+            });
+
+            if (!member) {
+                return res.status(401).json({ success: false, message: "Member ID, Name, or Phone not found!" });
+            }
+
+            if (member.password !== password) {
+                return res.status(401).json({ success: false, message: "Incorrect Member password!" });
+            }
+
+            return res.json({
+                success: true,
+                message: "Member login successful",
+                user: {
+                    username: member.memberId,
+                    name: member.name,
+                    role: "member",
+                    plan: member.plan
+                }
+            });
+        }
+
+        res.status(400).json({ success: false, message: "Invalid role specified" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
-
-setTimeout(seedDefaultUsers, 1500);
 
 module.exports = router;

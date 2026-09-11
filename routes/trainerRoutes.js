@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Trainer = require("../models/Trainer");
 
-// GET all trainers
 router.get("/", async (req, res) => {
     try {
         const trainers = await Trainer.find().sort({ createdAt: -1 });
@@ -12,10 +11,9 @@ router.get("/", async (req, res) => {
     }
 });
 
-// POST register a new trainer
 router.post("/", async (req, res) => {
     try {
-        const { name, phone, specialization, salary, shift } = req.body;
+        const { name, phone, specialization, salary, shift, password } = req.body;
         const count = await Trainer.countDocuments();
         const trainerId = `TRN-${101 + count}`;
 
@@ -25,7 +23,8 @@ router.post("/", async (req, res) => {
             phone,
             specialization,
             salary: Number(salary) || 20000,
-            shift: shift || "Morning Shift"
+            shift: shift || "Morning Shift",
+            password: password || "trainer123"
         });
 
         const saved = await newTrainer.save();
@@ -35,7 +34,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-// DELETE a trainer
 router.delete("/:id", async (req, res) => {
     try {
         await Trainer.findByIdAndDelete(req.params.id);

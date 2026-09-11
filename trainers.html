@@ -142,34 +142,41 @@
                 <div class="form-row">
                     <div class="form-field">
                         <label>Trainer Full Name</label>
-                        <input type="text" placeholder="e.g. Arjun More" required>
+                        <input type="text" id="trainerName" placeholder="e.g. Arjun More" required>
                     </div>
 
                     <div class="form-field">
                         <label>Contact Number</label>
-                        <input type="tel" placeholder="e.g. 9876543210" required>
+                        <input type="tel" id="trainerPhone" placeholder="e.g. 9876543210" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-field">
                         <label>Specialization</label>
-                        <input type="text" placeholder="e.g. Powerlifting, Cross-fit, Diet" required>
+                        <input type="text" id="trainerSpec" placeholder="e.g. Powerlifting, Cross-fit, Diet" required>
                     </div>
 
                     <div class="form-field">
                         <label>Monthly Salary (₹)</label>
-                        <input type="number" placeholder="e.g. 25000" required>
+                        <input type="number" id="trainerSalary" placeholder="e.g. 25000" required>
                     </div>
 
                     <div class="form-field">
                         <label>Working Shift</label>
-                        <select required>
+                        <select id="trainerShift" required>
                             <option value="">Select Shift...</option>
                             <option value="morning">Morning Shift (6 AM - 12 PM)</option>
                             <option value="evening">Evening Shift (5 PM - 11 PM)</option>
                             <option value="fullday">Full Day Shift</option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Set Trainer Login Password</label>
+                        <input type="password" id="trainerPassword" placeholder="e.g. coach123" required>
                     </div>
                 </div>
 

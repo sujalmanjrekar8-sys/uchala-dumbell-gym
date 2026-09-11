@@ -18,6 +18,10 @@ const memberSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    password: {
+        type: String,
+        required: true
+    },
     joinDate: {
         type: String,
         default: () => new Date().toISOString().split("T")[0]

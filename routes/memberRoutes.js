@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Member = require("../models/member");
 
-// 1. GET all members from MongoDB
 router.get("/", async (req, res) => {
     try {
         const members = await Member.find().sort({ createdAt: -1 });
@@ -12,10 +11,9 @@ router.get("/", async (req, res) => {
     }
 });
 
-// 2. POST (Save) a new member to MongoDB
 router.post("/", async (req, res) => {
     try {
-        const { name, phone, plan, joinDate } = req.body;
+        const { name, phone, plan, joinDate, password } = req.body;
 
         const count = await Member.countDocuments();
         const memberId = `UDG-${101 + count}`;
@@ -25,6 +23,7 @@ router.post("/", async (req, res) => {
             name,
             phone,
             plan,
+            password: password || "123456",
             joinDate: joinDate || new Date().toISOString().split("T")[0],
             status: "Active"
         });
@@ -36,7 +35,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-// 3. DELETE a member from MongoDB
 router.delete("/:id", async (req, res) => {
     try {
         const deleted = await Member.findByIdAndDelete(req.params.id);
