@@ -209,12 +209,23 @@ router.post("/login", async (req, res) => {
 
         // 1. OWNER LOGIN
         if (role === "owner") {
+            // If collection was wiped/deleted in MongoDB, auto-seed immediately
+            try {
+                const count = await Owner.countDocuments();
+                if (count === 0) {
+                    await Owner.create([
+                        { username: "sujalsir", password: "sualstar", name: "Gym Owner" },
+                        { username: "admin", password: "admin123", name: "Gym Admin" }
+                    ]);
+                    console.log("Empty owners collection automatically re-seeded!");
+                }
+            } catch (e) {}
+
             let owner = await findOwnerDocument(cleanUser);
 
             // Auto-heal / Auto-sync: If logging in with standard or custom owner credentials
             if (!owner && (cleanUser.toLowerCase() === "sujalsir" || cleanUser.toLowerCase() === "admin" || cleanUser.toLowerCase() === "owner")) {
                 try {
-                    await Owner.deleteMany({});
                     owner = await Owner.create({
                         username: cleanUser,
                         password: cleanPass,

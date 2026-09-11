@@ -361,4 +361,31 @@ document.addEventListener("DOMContentLoaded", function () {
     setupLoginForm("ownerLoginForm", "owner", "owner-dashboard.html");
     setupLoginForm("trainer-login-form", "trainer", "trainer-dashboard.html");
     setupLoginForm("memberLoginForm", "member", "member-dashboard.html");
+
+    // Quick Fix / Seed button for Owner
+    const btnResetOwner = document.getElementById("btnResetOwner");
+    if (btnResetOwner) {
+        btnResetOwner.addEventListener("click", async function () {
+            btnResetOwner.textContent = "Writing to MongoDB Atlas...";
+            btnResetOwner.disabled = true;
+            try {
+                const res = await fetch(`${API_BASE}/auth/set-owner?username=sujalsir&password=sualstar`);
+                const data = await res.json();
+                if (data.success) {
+                    const uInput = document.getElementById("username");
+                    const pInput = document.getElementById("password");
+                    if (uInput) uInput.value = "sujalsir";
+                    if (pInput) pInput.value = "sualstar";
+                    alert("✅ Success! Owner account (sujalsir / sualstar) has been written into MongoDB Atlas!\n\nNow click 'Sign In' to enter the dashboard!");
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (err) {
+                alert(`Error connecting to server (${err.message}). Make sure 'node server.js' is running in terminal!`);
+            } finally {
+                btnResetOwner.textContent = "⚡ Quick Fix: Seed Owner (sujalsir / sualstar) in MongoDB";
+                btnResetOwner.disabled = false;
+            }
+        });
+    }
 });
